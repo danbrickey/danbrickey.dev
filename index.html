@@ -715,9 +715,10 @@
                                href="https://www.linkedin.com/in/danbrickey/">
                                 LinkedIn — /in/danbrickey
                             </a>
-                            <!-- GitHub chip intentionally omitted until repos
-                                 are public / a profile README exists (0.13
-                                 review call) — re-add here when ready. -->
+                            <a class="chip"
+                               href="https://github.com/danbrickey">
+                                GitHub — /danbrickey
+                            </a>
                             <a class="chip" href="https://danbrickey.dev">
                                 danbrickey.dev
                             </a>
@@ -743,20 +744,39 @@
         (function () {
             var root = document.documentElement;
             var toggle = document.getElementById('themeToggle');
+            var mql = window.matchMedia
+                ? window.matchMedia('(prefers-color-scheme: dark)')
+                : null;
+
+            function systemTheme() {
+                return mql && mql.matches ? 'dark' : 'light';
+            }
+
             var stored = null;
             try {
                 stored = localStorage.getItem('theme');
             } catch (e) {}
 
-            // default: stored choice > prefers-color-scheme > light
-            var initial = stored;
-            if (initial !== 'light' && initial !== 'dark') {
-                initial = window.matchMedia &&
-                    window.matchMedia('(prefers-color-scheme: dark)').matches
-                    ? 'dark'
-                    : 'light';
-            }
+            // default: stored choice > system preference > light
+            var initial = (stored === 'light' || stored === 'dark')
+                ? stored
+                : systemTheme();
             applyTheme(initial);
+
+            // Follow the browser/OS scheme live: a system change wins and
+            // re-syncs the page, clearing any manual override — so flipping
+            // your browser between light/dark always updates the page.
+            if (mql) {
+                var onSystemChange = function () {
+                    try { localStorage.removeItem('theme'); } catch (e) {}
+                    applyTheme(systemTheme());
+                };
+                if (mql.addEventListener) {
+                    mql.addEventListener('change', onSystemChange);
+                } else if (mql.addListener) {
+                    mql.addListener(onSystemChange); // older Safari
+                }
+            }
 
             toggle.addEventListener('click', function () {
                 var next = root.getAttribute('data-theme') === 'dark'
