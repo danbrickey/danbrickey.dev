@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dan Brickey — Data Platform Architect</title>
+<meta name="description"
+      content="Dan Brickey — data platform architect. Data Vault 2.0,
+               Kimball, and AI-leveraged data engineering.">
+<link rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f4f1e8' stroke='%231c1a17' stroke-width='6'/%3E%3Ctext x='50' y='66' font-size='46' font-family='Georgia,serif' font-weight='400' fill='%231c1a17' text-anchor='middle'%3EDB%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Josefin+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet">
+<style>
+    :root {
+        --desk: #e7e4d8;
+        --paper: #f4f1e8;
+        --ink: #1c1a17;
+        --muted: #4a4536;
+        --faint: #a49c86;
+        --line: #1c1a17;
+        --linesoft: rgba(28, 26, 23, .2);
+        --dashln: rgba(28, 26, 23, .35);
+        --dotbg: #dcd6c4;
+        --labelbg: rgba(244, 241, 232, .85);
+        --gridmin: rgba(28, 26, 23, .05);
+        --gridmaj: rgba(28, 26, 23, .08);
+    }
+
+    html[data-theme="dark"] {
+        --desk: #191b1f;
+        --paper: #23262b;
+        --ink: #d6d4c8;
+        --muted: #9a9c94;
+        --faint: #7c7e78;
+        --line: #d6d4c8;
+        --linesoft: rgba(214, 212, 200, .2);
+        --dashln: rgba(214, 212, 200, .3);
+        --dotbg: #2c3037;
+        --labelbg: rgba(35, 38, 43, .9);
+        --gridmin: rgba(214, 212, 200, .05);
+        --gridmaj: rgba(214, 212, 200, .08);
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html,
+    body {
+        margin: 0;
+    }
+
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    ::selection {
+        background: rgba(120, 110, 80, .25);
+    }
+
+    .desk {
+        min-height: 100vh;
+        padding: 48px 24px 80px;
+        display: flex;
+        justify-content: center;
+        background: var(--desk);
+        font-family: 'IBM Plex Mono', monospace;
+        color: var(--ink);
+    }
+
+    .sheet {
+        position: relative;
+        width: 1040px;
+        max-width: 100%;
+        background-color: var(--paper);
+        background-image:
+            linear-gradient(var(--gridmin) 1px, transparent 1px),
+            linear-gradient(90deg, var(--gridmin) 1px, transparent 1px),
+            linear-gradient(var(--gridmaj) 1px, transparent 1px),
+            linear-gradient(90deg, var(--gridmaj) 1px, transparent 1px);
+        background-size: 24px 24px, 24px 24px, 120px 120px, 120px 120px;
+        border: 1px solid var(--linesoft);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, .22);
+    }
+
+    /* ===== header ===== */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 34px 12px 68px;
+        border-bottom: 1.5px solid var(--line);
+        font-size: 10.5px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
+    .header__right {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+    }
+
+    .header__page {
+        color: var(--muted);
+    }
+
+    .toggle {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--ink);
+        background: transparent;
+        border: 1px solid var(--line);
+        padding: 5px 12px;
+        cursor: pointer;
+    }
+
+    .spacer {
+        padding: 8px 34px 0 68px;
+        min-height: 14px;
+    }
+
+    /* ===== body columns ===== */
+    .body {
+        display: flex;
+    }
+
+    .rail-gutter {
+        flex: 0 0 auto;
+        width: 13px;
+        padding: 26px 0 26px 24px;
+    }
+
+    .content {
+        flex: 1;
+        padding: 18px 40px 0 24px;
+        min-width: 0;
+    }
+
+    /* ===== hero ===== */
+    .hero {
+        border: 1.5px solid var(--line);
+        padding: 26px 30px;
+    }
+
+    .hero__inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 34px;
+    }
+
+    .hero__text {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .hero__name {
+        font-family: 'Josefin Sans', sans-serif;
+        font-weight: 300;
+        font-variant: small-caps;
+        letter-spacing: 4px;
+        font-size: 50px;
+        line-height: 1.02;
+        margin: 0;
+    }
+
+    .hero__role {
+        font-size: 11px;
+        letter-spacing: 3.5px;
+        text-transform: uppercase;
+        margin-top: 14px;
+        color: var(--muted);
+    }
+
+    .hero__pitch {
+        font-family: 'IBM Plex Mono', monospace;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-size: 13px;
+        line-height: 1.75;
+        margin: 18px 0 0;
+        max-width: 560px;
+        color: var(--ink);
+    }
+
+    .headshot {
+        position: relative;
+        width: 158px;
+        height: 196px;
+        flex: 0 0 auto;
+        border: 1px solid var(--line);
+        overflow: hidden;
+        background: var(--dotbg);
+    }
+
+    .headshot__img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    /* neutral CSS placeholder — replace with a real <img> when supplied */
+    .headshot__placeholder {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--dotbg);
+    }
+
+    .headshot__placeholder svg {
+        width: 64px;
+        height: 64px;
+        opacity: .45;
+    }
+
+    .headshot__caption {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        text-align: center;
+        font-size: 8px;
+        letter-spacing: 1.5px;
+        padding: 3px;
+        background: var(--labelbg);
+        color: var(--ink);
+        pointer-events: none;
+    }
+
+    /* ===== sections / connectors ===== */
+    .section {
+        margin-top: 30px;
+    }
+
+    .section--about {
+        display: flex;
+        gap: 0;
+        margin-top: 26px;
+    }
+
+    .rail {
+        width: 40px;
+        flex: 0 0 auto;
+        position: relative;
+    }
+
+    .rail__line {
+        position: absolute;
+        left: 19px;
+        top: 0;
+        bottom: 0;
+        width: 1.5px;
+        background: var(--line);
+    }
+
+    .rail__line--work {
+        bottom: 40px;
+    }
+
+    .section__body {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .heading {
+        font-family: 'Josefin Sans', sans-serif;
+        font-weight: 600;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        font-size: 13px;
+        border-bottom: 1.5px solid var(--line);
+        padding-bottom: 6px;
+    }
+
+    .heading--plain {
+        border-bottom: none;
+        margin-bottom: 12px;
+    }
+
+    .about__body {
+        font-size: 12.5px;
+        line-height: 1.85;
+        margin: 14px 0 0;
+        color: var(--ink);
+        max-width: 760px;
+    }
+
+    .work {
+        display: flex;
+        margin-top: 18px;
+    }
+
+    /* ===== project cards ===== */
+    .card {
+        position: relative;
+        border: 1px solid var(--line);
+        padding: 16px 20px;
+        margin-bottom: 16px;
+    }
+
+    .card__connector {
+        position: absolute;
+        left: -40px;
+        top: 26px;
+        width: 40px;
+        height: 1.5px;
+        background: var(--line);
+    }
+
+    .card__top {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 16px;
+    }
+
+    .card__title {
+        font-family: 'Josefin Sans', sans-serif;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-size: 16px;
+    }
+
+    .card__link {
+        font-size: 10px;
+        letter-spacing: 1px;
+        border-bottom: 1px solid var(--line);
+        white-space: nowrap;
+    }
+
+    .card__link:hover,
+    .card__link:focus-visible {
+        opacity: .6;
+    }
+
+    .card__pitch {
+        font-size: 12px;
+        line-height: 1.75;
+        margin: 10px 0 0;
+        color: var(--ink);
+        max-width: 720px;
+    }
+
+    .card--open {
+        border: 1px dashed var(--dashln);
+        color: var(--faint);
+        font-size: 11px;
+        letter-spacing: 1px;
+        padding: 12px 20px;
+    }
+
+    .card--open .card__connector {
+        top: 22px;
+        background: var(--dashln);
+    }
+
+    /* ===== KSA matrix ===== */
+    .ksa {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border: 1px solid var(--line);
+    }
+
+    .ksa__head {
+        font-family: 'Josefin Sans', sans-serif;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-size: 11px;
+        padding: 11px 16px;
+        border-bottom: 1.5px solid var(--line);
+        border-right: 1px solid var(--linesoft);
+    }
+
+    .ksa__cell {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 12px;
+        line-height: 1.4;
+        letter-spacing: .3px;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--linesoft);
+        border-right: 1px solid var(--linesoft);
+    }
+
+    /* last column: drop the right divider */
+    .ksa__head:nth-child(3n),
+    .ksa__cell:nth-child(3n) {
+        border-right: none;
+    }
+
+    /* last body row: drop the bottom divider (rows 2..5 → cells 10..12) */
+    .ksa__cell:nth-child(n+13) {
+        border-bottom: none;
+    }
+
+    /* ===== contact ===== */
+    .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 16px;
+    }
+
+    .chip {
+        border: 1px solid var(--line);
+        padding: 9px 16px;
+        font-size: 11px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+    }
+
+    .chip:hover,
+    .chip:focus-visible {
+        opacity: .6;
+    }
+
+    /* ===== footer ===== */
+    .footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        padding: 18px 34px 22px 68px;
+        margin-top: 34px;
+        border-top: 1.5px solid var(--line);
+    }
+
+    .footer__signed {
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+        white-space: nowrap;
+    }
+
+    .footer__sig {
+        font-family: 'Shadows Into Light', cursive;
+        font-variant: small-caps;
+        font-size: 24px;
+        letter-spacing: 0;
+        text-transform: none;
+        border-bottom: 1px solid var(--line);
+        padding: 0 40px 1px 8px;
+    }
+
+    .footer__rev {
+        font-size: 10px;
+        letter-spacing: 2px;
+        color: var(--muted);
+    }
+
+    /* ===== responsive ===== */
+    @media (max-width: 720px) {
+        .desk {
+            padding: 20px 12px 48px;
+        }
+
+        .header {
+            padding: 14px 18px 10px 18px;
+            gap: 12px;
+        }
+
+        .header__right {
+            gap: 12px;
+        }
+
+        .spacer {
+            padding: 6px 18px 0 18px;
+        }
+
+        .rail-gutter {
+            display: none;
+        }
+
+        .content {
+            padding: 14px 18px 0 18px;
+        }
+
+        .hero {
+            padding: 20px 18px;
+        }
+
+        /* stack: headshot above the name */
+        .hero__inner {
+            flex-direction: column-reverse;
+            align-items: flex-start;
+            gap: 22px;
+        }
+
+        .hero__name {
+            font-size: 38px;
+            letter-spacing: 2px;
+        }
+
+        /* drop the connector rails on narrow screens */
+        .rail {
+            display: none;
+        }
+
+        .card__connector {
+            display: none;
+        }
+
+        /* collapse the KSA grid to a single column */
+        .ksa {
+            grid-template-columns: 1fr;
+        }
+
+        .ksa__head,
+        .ksa__cell {
+            border-right: none;
+        }
+
+        .ksa__cell {
+            border-bottom: 1px solid var(--linesoft);
+        }
+
+        .ksa__cell:nth-child(n+13) {
+            border-bottom: none;
+        }
+
+        .footer {
+            padding: 16px 18px 18px 18px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 14px;
+        }
+    }
+</style>
+</head>
+<body>
+    <div class="desk">
+        <div class="sheet">
+
+            <!-- ===== header bar ===== -->
+            <div class="header">
+                <span>Engineering Notebook — Vol. 01</span>
+                <div class="header__right">
+                    <span class="header__page">Portfolio · Pg. 01</span>
+                    <button class="toggle" type="button" id="themeToggle"
+                            aria-label="Toggle light and dark theme">
+                        ◐ Dark
+                    </button>
+                </div>
+            </div>
+
+            <!-- coord ticks (labels removed, spacing kept) -->
+            <div class="spacer"></div>
+
+            <div class="body">
+                <div class="rail-gutter"></div>
+
+                <div class="content">
+
+                    <!-- ===== hero node ===== -->
+                    <div class="hero">
+                        <div class="hero__inner">
+                            <div class="hero__text">
+                                <h1 class="hero__name">Dan Brickey</h1>
+                                <div class="hero__role">
+                                    Data Platform Architect · node/root
+                                </div>
+                                <p class="hero__pitch">
+                                    Data Vault 2.0 · Kimball · AI-leveraged
+                                    data engineering
+                                </p>
+                            </div>
+                            <div class="headshot">
+                                <!-- Replace this placeholder block with:
+                                     <img class="headshot__img"
+                                          src="headshot.jpg"
+                                          alt="Dan Brickey"> -->
+                                <div class="headshot__placeholder"
+                                     aria-hidden="true">
+                                    <svg viewBox="0 0 24 24"
+                                         fill="none"
+                                         stroke="currentColor"
+                                         stroke-width="1.2">
+                                        <circle cx="12" cy="8" r="4"/>
+                                        <path d="M4 21c0-4.4 3.6-8 8-8
+                                                 s8 3.6 8 8"/>
+                                    </svg>
+                                </div>
+                                <span class="headshot__caption">HEADSHOT</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== about ===== -->
+                    <div class="section--about">
+                        <div class="rail">
+                            <div class="rail__line"></div>
+                        </div>
+                        <div class="section__body">
+                            <div class="heading">About</div>
+                            <p class="about__body">
+                                I build governed, auditable data platforms —
+                                the kind teams can trust and auditors can
+                                follow. My work pairs disciplined modeling
+                                (Data Vault 2.0, Kimball) with modern,
+                                AI-leveraged engineering, and I care as much
+                                about lineage and documentation as I do about
+                                throughput.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- ===== selected work ===== -->
+                    <div class="section">
+                        <div class="heading">Selected Work · Log</div>
+
+                        <div class="work">
+                            <div class="rail">
+                                <div class="rail__line rail__line--work"></div>
+                            </div>
+                            <div class="section__body">
+
+                                <!-- 01 -->
+                                <div class="card">
+                                    <div class="card__connector"></div>
+                                    <div class="card__top">
+                                        <div class="card__title">
+                                            01 · Healthcare Data Platform
+                                        </div>
+                                        <a class="card__link"
+                                           href="https://hdp.danbrickey.dev/"
+                                           target="_blank"
+                                           rel="noopener">→ VIEW</a>
+                                    </div>
+                                    <p class="card__pitch">
+                                        Claims and clinical data usually live
+                                        trapped in fragmented, un-auditable
+                                        legacy systems. I rebuilt that world
+                                        solo — a governed Data Vault 2.0 +
+                                        Kimball platform on synthetic claims
+                                        and clinical data, spec-driven and
+                                        AI-leveraged end to end — proving one
+                                        architect can stand up what normally
+                                        takes a team.
+                                    </p>
+                                </div>
+
+                                <!-- 02 -->
+                                <div class="card">
+                                    <div class="card__connector"></div>
+                                    <div class="card__top">
+                                        <div class="card__title">
+                                            02 · Gazetteer
+                                        </div>
+                                        <a class="card__link"
+                                           href="https://gazetteer.danbrickey.dev/"
+                                           target="_blank"
+                                           rel="noopener">→ VIEW</a>
+                                    </div>
+                                    <p class="card__pitch">
+                                        Comparing where to live means wrestling
+                                        a dozen disagreeing public datasets with
+                                        no common ground. Gazetteer unifies them
+                                        into one Data Vault 2.0 platform — cost
+                                        of living, income, jobs, and health,
+                                        lined up for the same place and period —
+                                        so “where's my happy place” gets a real,
+                                        data-backed answer.
+                                    </p>
+                                </div>
+
+                                <!-- open nodes -->
+                                <div class="card card--open">
+                                    <div class="card__connector"></div>
+                                    03–10 · open nodes — ruled &amp; ready for
+                                    the next entries
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== KSA matrix ===== -->
+                    <div class="section">
+                        <div class="heading heading--plain">
+                            Knowledge · Skills · Abilities
+                        </div>
+                        <div class="ksa">
+                            <div class="ksa__head">Architecture</div>
+                            <div class="ksa__head">Cloud / AI Stack</div>
+                            <div class="ksa__head">Databases &amp; Tools</div>
+
+                            <div class="ksa__cell">Data Vault 2.0</div>
+                            <div class="ksa__cell">Snowflake (Cortex AI)</div>
+                            <div class="ksa__cell">SQL Server · Oracle</div>
+
+                            <div class="ksa__cell">Kimball Dimensional</div>
+                            <div class="ksa__cell">AWS S3 / Data Lakes</div>
+                            <div class="ksa__cell">SQL · Python</div>
+
+                            <div class="ksa__cell">Medallion Architecture</div>
+                            <div class="ksa__cell">dbt + CI/CD</div>
+                            <div class="ksa__cell">WhereScape · Custom ETL</div>
+
+                            <div class="ksa__cell">Governance &amp; MDM</div>
+                            <div class="ksa__cell">LLM-Assisted Engineering</div>
+                            <div class="ksa__cell">GitLab · GitHub</div>
+                        </div>
+                    </div>
+
+                    <!-- ===== contact ===== -->
+                    <div class="section">
+                        <div class="heading">Contact · End Nodes</div>
+                        <div class="chips">
+                            <a class="chip"
+                               href="mailto:dan@brickey.dev">
+                                Email — dan@brickey.dev
+                            </a>
+                            <a class="chip"
+                               href="https://www.linkedin.com/in/danbrickey/">
+                                LinkedIn — /in/danbrickey
+                            </a>
+                            <!-- GitHub chip intentionally omitted until repos
+                                 are public / a profile README exists (0.13
+                                 review call) — re-add here when ready. -->
+                            <a class="chip" href="https://danbrickey.dev">
+                                danbrickey.dev
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ===== footer ===== -->
+            <div class="footer">
+                <div class="footer__signed">
+                    Signed
+                    <span class="footer__sig">Dan Brickey</span>
+                </div>
+                <div class="footer__rev">SHEET 01 · REV 2026·07·06</div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var root = document.documentElement;
+            var toggle = document.getElementById('themeToggle');
+            var stored = null;
+            try {
+                stored = localStorage.getItem('theme');
+            } catch (e) {}
+
+            // default: stored choice > prefers-color-scheme > light
+            var initial = stored;
+            if (initial !== 'light' && initial !== 'dark') {
+                initial = window.matchMedia &&
+                    window.matchMedia('(prefers-color-scheme: dark)').matches
+                    ? 'dark'
+                    : 'light';
+            }
+            applyTheme(initial);
+
+            toggle.addEventListener('click', function () {
+                var next = root.getAttribute('data-theme') === 'dark'
+                    ? 'light'
+                    : 'dark';
+                applyTheme(next);
+                try {
+                    localStorage.setItem('theme', next);
+                } catch (e) {}
+            });
+
+            function applyTheme(theme) {
+                root.setAttribute('data-theme', theme);
+                toggle.textContent = theme === 'dark' ? '◑ Light' : '◐ Dark';
+            }
+        })();
+    </script>
+</body>
+</html>
