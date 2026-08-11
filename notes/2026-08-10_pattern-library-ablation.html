@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A pattern library buys conventions, not judgment — Lab Notes — Dan Brickey</title>
+<meta name="description"
+      content="Stripping a Data Vault pattern library in stages: judgment
+               survived at zero context, conventions did not, and the gap was
+               11 points rather than the 40 the prediction called for.">
+<link rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f4f1e8' stroke='%231c1a17' stroke-width='6'/%3E%3Ctext x='50' y='66' font-size='46' font-family='Georgia,serif' font-weight='400' fill='%231c1a17' text-anchor='middle'%3EDB%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Josefin+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet">
+<link rel="stylesheet" href="note.css">
+</head>
+<body>
+<div class="desk">
+    <div class="sheet">
+
+        <div class="header">
+            <a class="header__back" href="../index.html">&larr; Notebook</a>
+            <div class="header__right">
+                <span class="header__page">Lab Notes &middot; No. 02</span>
+                <button class="toggle" type="button" id="themeToggle"
+                        aria-label="Toggle light and dark theme">◐ Dark</button>
+            </div>
+        </div>
+
+        <div class="note">
+
+            <div class="note__eyebrow">Context Engineering &middot; Ablation Study</div>
+            <h1 class="note__title">
+                A pattern library buys conventions, not judgment
+            </h1>
+            <p class="note__standfirst">
+                Does a written pattern library teach a model how to do the work,
+                or only how this shop does it? This experiment strips the
+                library in stages and scores what falls out. Judgment survived
+                at zero context. Conventions did not. The gap was 11 points,
+                not the 40 the prediction called for.
+            </p>
+
+            <div class="meta">
+                <div class="meta__cell">
+                    <div class="meta__k">Date</div>
+                    <div class="meta__v">2026-08-09, re-graded 08-10</div>
+                </div>
+                <div class="meta__cell">
+                    <div class="meta__k">Task</div>
+                    <div class="meta__v">Generate a Data Vault 2.0 raw vault from a frozen spec</div>
+                </div>
+                <div class="meta__cell">
+                    <div class="meta__k">Conditions</div>
+                    <div class="meta__v">10 cells &middot; 3 model tiers &middot; 4 context variants</div>
+                </div>
+                <div class="meta__cell">
+                    <div class="meta__k">Verdict</div>
+                    <div class="meta__v">Core prediction held, magnitude wrong</div>
+                </div>
+            </div>
+
+            <!-- ===== hypothesis ===== -->
+            <h2 class="h2">What I predicted, before running it</h2>
+            <p class="p p--lead">
+                The pattern library is the document that tells a coding agent
+                how this project builds a data vault: naming, the hashing
+                mandate, layer rules, two-stage staging, materializations,
+                testing minimums. It also contained a Structures section
+                explaining what hubs, links and satellites <em>are</em>, and
+                when each applies. That second part is general discipline
+                knowledge, not a fact about this project, and I suspected it
+                was paying no rent.
+            </p>
+            <p class="p">
+                Three runs, same frozen source spec, same rubric, same harness.
+                Only the context varied: the full library, a thin version with
+                the Structures section removed, and nothing at all beyond
+                "build a raw vault to good Data Vault 2.0 practice."
+            </p>
+            <p class="p">
+                The spec carries two deliberate traps. One is a collision case:
+                a licence number that is only unique within a jurisdiction,
+                sitting next to a parcel number that is genuinely global, so the
+                correct design keys them differently. The other is a set of
+                repeating attributes that should become a multi-active satellite
+                rather than a hub and link.
+            </p>
+            <p class="p">
+                Written down before any of it ran:
+            </p>
+            <ul class="ul">
+                <li>
+                    <strong>The thin run lands 88 to 96</strong>, inside noise
+                    of the full run. The removed section is dead weight.
+                </li>
+                <li>
+                    <strong>The no-library run lands 45 to 65.</strong> It will
+                    miss naming, the hashing mandate, two-stage staging,
+                    materializations and testing minimums, because none of those
+                    can be inferred.
+                </li>
+                <li>
+                    <strong>The no-library run passes both traps anyway.</strong>
+                    Those are business judgment, and I expect the model brings
+                    them unaided.
+                </li>
+            </ul>
+            <p class="p">
+                And the falsification condition, also written first: <strong>if
+                the no-library run fails a trap, the library is carrying
+                judgment</strong>, the teaching sections earn their place, and
+                thinning it is dangerous.
+            </p>
+
+            <!-- ===== results ===== -->
+            <h2 class="h2">Results</h2>
+            <div class="tablewrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Context</th>
+                            <th class="num">Words</th>
+                            <th class="num">Score</th>
+                            <th>Collision trap</th>
+                            <th>Multi-active trap</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Full library</td>
+                            <td class="num">709</td>
+                            <td class="num"><strong>100</strong></td>
+                            <td>pass</td>
+                            <td>pass</td>
+                        </tr>
+                        <tr>
+                            <td>Full library, repeat run</td>
+                            <td class="num">709</td>
+                            <td class="num"><strong>100</strong></td>
+                            <td>pass</td>
+                            <td>pass</td>
+                        </tr>
+                        <tr>
+                            <td>Thin (Structures section removed)</td>
+                            <td class="num">592</td>
+                            <td class="num"><strong>100</strong></td>
+                            <td>pass</td>
+                            <td>pass</td>
+                        </tr>
+                        <tr>
+                            <td>Colloquial rewrite (deliberately degraded)</td>
+                            <td class="num">1,376</td>
+                            <td class="num"><strong>100</strong></td>
+                            <td>pass</td>
+                            <td>pass</td>
+                        </tr>
+                        <tr>
+                            <td><strong>None</strong></td>
+                            <td class="num">0</td>
+                            <td class="num"><strong>89</strong></td>
+                            <td><strong>pass</strong></td>
+                            <td><strong>pass</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="p">
+                Four different context treatments, one score. Full, thin, and a
+                rewrite I degraded on purpose all land on 100, and two
+                independent runs of the identical input agree exactly, dimension
+                for dimension.
+            </p>
+            <p class="p">
+                Removing the library entirely costs <strong>11 points</strong>,
+                and all 11 sit in conventions. The judgment dimensions score
+                44 out of 44 in every condition, including the one with no
+                context at all.
+            </p>
+
+            <div class="callout">
+                <div class="callout__k">The finding</div>
+                <p class="p">
+                    The library's <em>existence</em> is worth 11 points. Its
+                    content and its phrasing are worth zero. What it buys is the
+                    part that cannot be inferred from anywhere, and nothing
+                    else.
+                </p>
+            </div>
+
+            <!-- ===== the wrong prediction ===== -->
+            <h2 class="h2">The prediction I got wrong, and why it looked right</h2>
+            <p class="p p--lead">
+                Prediction two said the no-library run would land between 45 and
+                65. The first grading gave it <strong>62</strong>. Inside the
+                range, recorded as confirmed, and quoted for a day as a
+                34-point context effect.
+            </p>
+            <p class="p">
+                Then the whole series was re-graded blind, in a shuffled pool
+                with prior scores stripped and a matched effort protocol. The
+                no-library run came back at <strong>89</strong>. Nine of the ten
+                cells scored the same or higher, and this was the largest
+                correction in the series at 27 points.
+            </p>
+            <p class="p">
+                So the prediction was wrong by more than twenty points, and the
+                grading bias hid it. First-pass scoring was systematically harsh
+                rather than randomly noisy, and the error scaled with how bad a
+                submission looked. The worst-looking cell got the worst
+                treatment, which is exactly the cell that decided whether my
+                prediction held.
+            </p>
+            <p class="p">
+                I would have carried "prediction two confirmed" forward as a
+                fact. That is the argument for re-grading your own instrument
+                before you trust anything it told you, and it is a separate
+                write-up.
+            </p>
+
+            <!-- ===== what zero context got right ===== -->
+            <h2 class="h2">What zero context got right on its own</h2>
+            <p class="p p--lead">
+                Given nothing but the source spec and one line asking for good
+                Data Vault practice, the run independently:
+            </p>
+            <ul class="ul">
+                <li>keyed the licence on licence <strong>plus jurisdiction</strong> and the parcel on its number alone, which was the entire point of the collision trap;</li>
+                <li>built a multi-active satellite rather than a hub and link for the repeating attributes;</li>
+                <li>modelled the permit as a link with a degenerate key rather than a hub;</li>
+                <li>split the permit attributes by rate of change, putting the completion date on the status side;</li>
+                <li>loaded both hubs from every staging model carrying their key, so orphan references still resolve;</li>
+                <li>and flagged <strong>five open questions for the system owners</strong>.</li>
+            </ul>
+            <p class="p">
+                That last one is the part I did not expect. The instruction
+                asking for escalation lives in the library, and escalation
+                behaviour survived its removal.
+            </p>
+            <p class="p">
+                It is also worth being precise about what the no-library run
+                lost. It was not sloppy. It used <code>hub_contractor</code> and
+                <code>sat_</code> prefixes, single-stage staging, and a
+                thoughtful but non-matching set of tests. Those are
+                <em>automate_dv's own documented conventions</em>: coherent,
+                defensible, and not this project's. The run followed a different
+                standard rather than no standard.
+            </p>
+
+            <!-- ===== tier ===== -->
+            <h2 class="h2">The same experiment at a lower tier, where it gets uncomfortable</h2>
+            <p class="p p--lead">
+                Running the no-library condition against a mid-tier model
+                changes which half breaks.
+            </p>
+            <div class="tablewrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No library</th>
+                            <th class="num">Total</th>
+                            <th class="num">Judgment (44)</th>
+                            <th class="num">Conventions (56)</th>
+                            <th>Multi-active trap</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Stronger model</td>
+                            <td class="num">89</td>
+                            <td class="num"><strong>44</strong></td>
+                            <td class="num">45</td>
+                            <td><strong>pass</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Mid-tier model</td>
+                            <td class="num"><strong>92.5</strong></td>
+                            <td class="num">40</td>
+                            <td class="num"><strong>52.5</strong></td>
+                            <td>partial</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="p">
+                Strip the context and the stronger model loses conventions
+                only. The mid-tier model holds its conventions better and loses
+                <strong>judgment</strong> instead.
+            </p>
+            <p class="p">
+                Which means the cost of under-specifying is not a fixed number
+                you can budget against. It changes category as you move down the
+                stack. A convention gap is visible in review: wrong prefix,
+                missing test, staging in one step instead of two. A judgment gap
+                looks correct.
+            </p>
+
+            <div class="callout">
+                <div class="callout__k">The uncomfortable part</div>
+                <p class="p">
+                    The mid-tier model <strong>outscores</strong> the stronger
+                    one, 92.5 to 89, while being worse at the thing that
+                    matters. The rubric pays more for convention polish than for
+                    judgment, so the more dangerous output wins on the
+                    scoreboard.
+                </p>
+                <p class="p">
+                    This is a rubric flaw, and it is also the finding,
+                    demonstrated on the instrument built to catch exactly that
+                    failure mode. A benchmark designed to detect confidently
+                    wrong design ranked the confidently wrong design higher. A
+                    human reading a pull request has less to work with than the
+                    rubric did.
+                </p>
+            </div>
+
+            <!-- ===== cost ===== -->
+            <h2 class="h2">What it cost</h2>
+            <p class="p p--lead">
+                Two time-boxed blocks and roughly 229,000 tokens for the two
+                parallel cold runs. The re-grade added ten cold graders across
+                the pool.
+            </p>
+            <p class="p">
+                The expensive part was neither. It was discovering that a day of
+                conclusions rested on grading nobody had controlled, and having
+                to re-run the scoring before any of it could be used.
+            </p>
+
+            <!-- ===== limits ===== -->
+            <h2 class="h2">What this does not prove</h2>
+            <div class="callout">
+                <div class="callout__k">Scope limits</div>
+                <ul class="ul">
+                    <li>
+                        <strong>It does not measure the cost of
+                        over-specifying.</strong> Ablation detects dead weight.
+                        It cannot detect a rule that <em>prevents</em> a better
+                        answer, because removing a harmful rule and removing a
+                        useless one look identical on this design. That needs a
+                        planted case where the stated rule is wrong for the
+                        situation, and I have not run it.
+                    </li>
+                    <li>
+                        <strong>One spec, one synthetic domain, ten cells.</strong>
+                        Municipal permits, generated for the purpose. Nothing
+                        here speaks to a real codebase with real history.
+                    </li>
+                    <li>
+                        <strong>One grader per cell, and the grader is a
+                        language model.</strong> Dual grading is open work,
+                        specifically because single-grader bias is now a
+                        measured problem in this series rather than a
+                        theoretical one.
+                    </li>
+                    <li>
+                        <strong>This library was already lean.</strong> Roughly
+                        83% of it was project-specific before the ablation
+                        started. The result shows this document was not carrying
+                        much theory. It does not show that large context corpora
+                        generally are over-specified.
+                    </li>
+                    <li>
+                        <strong>The instrument is saturated.</strong> Four cells
+                        at 100 with zero deductions means it has stopped
+                        measuring the top of the range. Anything about future
+                        model generations needs a harder spec, which is frozen
+                        and unrun.
+                    </li>
+                </ul>
+            </div>
+
+            <!-- ===== what changes ===== -->
+            <h2 class="h2">What I changed as a result</h2>
+            <p class="p p--lead">
+                A context document's job is the un-inferable: conventions,
+                tooling mandates, layer structure, testing minimums, the
+                exceptions specific to this business. Sentences that teach the
+                discipline itself measured zero at every tier tested.
+            </p>
+            <p class="p">
+                They also carry a risk the un-inferable content does not. A
+                stale or wrong sentence in a teaching section can only override
+                a model that would have been right. Nobody has a competing
+                belief about your naming convention, so that half has no such
+                downside.
+            </p>
+            <p class="p">
+                The working test for any section of a context document: could a
+                competent practitioner who has never seen this project derive
+                this? If yes, it is a candidate for deletion. Then re-run the
+                ablation rather than trusting the judgment, and grade it blind
+                in a shuffled pool before believing the number.
+            </p>
+
+            <h2 class="h2">Receipts</h2>
+            <p class="receipts">
+                The frozen spec, the rubric, all ten graded submissions, the
+                pre-registered hypotheses, and the re-grade protocol live in the
+                lab repository. Every experiment in that lab runs on public or
+                synthetic data only, so nothing here is downstream of anyone's
+                production system.<br>
+                <a href="2026-06-21_duckdb-to-snowflake-parity.html">Related: porting 65 dbt models to Snowflake</a>
+            </p>
+
+        </div>
+
+        <div class="footer">
+            <span>Lab Note 02 &middot; Rev 2026&middot;08&middot;11</span>
+            <span><a href="../index.html">Back to the notebook</a></span>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    (function () {
+        var root = document.documentElement;
+        var toggle = document.getElementById('themeToggle');
+        var mql = window.matchMedia
+            ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+
+        function systemTheme() { return mql && mql.matches ? 'dark' : 'light'; }
+
+        var stored = null;
+        try { stored = localStorage.getItem('theme'); } catch (e) {}
+
+        applyTheme((stored === 'light' || stored === 'dark') ? stored : systemTheme());
+
+        if (mql) {
+            var onSystemChange = function () {
+                try { localStorage.removeItem('theme'); } catch (e) {}
+                applyTheme(systemTheme());
+            };
+            if (mql.addEventListener) { mql.addEventListener('change', onSystemChange); }
+            else if (mql.addListener) { mql.addListener(onSystemChange); }
+        }
+
+        toggle.addEventListener('click', function () {
+            var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            applyTheme(next);
+            try { localStorage.setItem('theme', next); } catch (e) {}
+        });
+
+        function applyTheme(theme) {
+            root.setAttribute('data-theme', theme);
+            toggle.textContent = theme === 'dark' ? '◑ Light' : '◐ Dark';
+        }
+    })();
+</script>
+</body>
+</html>

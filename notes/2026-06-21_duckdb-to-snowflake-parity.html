@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Porting 65 dbt models to Snowflake — Lab Notes — Dan Brickey</title>
+<meta name="description"
+      content="A DuckDB to Snowflake port of 65 dbt models: zero model files
+               changed, four dialect gaps, row-level parity proven. What it
+               cost and what it does not prove.">
+<link rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f4f1e8' stroke='%231c1a17' stroke-width='6'/%3E%3Ctext x='50' y='66' font-size='46' font-family='Georgia,serif' font-weight='400' fill='%231c1a17' text-anchor='middle'%3EDB%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Josefin+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet">
+<link rel="stylesheet" href="note.css">
+</head>
+<body>
+<div class="desk">
+    <div class="sheet">
+
+        <div class="header">
+            <a class="header__back" href="../index.html">&larr; Notebook</a>
+            <div class="header__right">
+                <span class="header__page">Lab Notes &middot; No. 01</span>
+                <button class="toggle" type="button" id="themeToggle"
+                        aria-label="Toggle light and dark theme">◐ Dark</button>
+            </div>
+        </div>
+
+        <div class="note">
+
+            <div class="note__eyebrow">Migration &middot; Experiment Report</div>
+            <h1 class="note__title">
+                Porting 65 dbt models to Snowflake: zero model changes,
+                parity proven
+            </h1>
+            <p class="note__standfirst">
+                How much of a technology migration is judgment, and how much is
+                labor? This experiment ports a working DuckDB analytics platform
+                to Snowflake, proves the output equivalent to the source row by
+                row, and counts which parts actually needed a person. Four did.
+            </p>
+
+            <div class="meta">
+                <div class="meta__cell">
+                    <div class="meta__k">Date</div>
+                    <div class="meta__v">2026-06-21</div>
+                </div>
+                <div class="meta__cell">
+                    <div class="meta__k">Project</div>
+                    <div class="meta__v">Gazetteer (public data)</div>
+                </div>
+                <div class="meta__cell">
+                    <div class="meta__k">Stack</div>
+                    <div class="meta__v">dbt &middot; DuckDB &middot; Snowflake &middot; AutomateDV</div>
+                </div>
+                <div class="meta__cell">
+                    <div class="meta__k">Verdict</div>
+                    <div class="meta__v">Prediction held</div>
+                </div>
+            </div>
+
+            <!-- ===== hypothesis ===== -->
+            <h2 class="h2">What I predicted, before running it</h2>
+            <p class="p p--lead">
+                A migration is a good test case for how far an AI-assisted
+                workflow can carry a task on its own, because all the ambiguity
+                is already gone. The source platform is a complete, executable
+                statement of the right answer: the Snowflake version should
+                compute exactly what DuckDB already computes. The target is
+                documented and finite. Nothing in the middle is a research
+                question.
+            </p>
+            <p class="p">
+                So my prediction was specific enough to be wrong. If what
+                historically made migrations expensive was line-by-line
+                translation labor, then this port should come out
+                <strong>mostly autonomous</strong>, the gaps that surfaced
+                should be <strong>mechanical rather than structural</strong>,
+                and the result should be
+                <strong>provably equivalent to the source</strong> rather than
+                merely plausible. If instead the gaps forced redesign
+                decisions, the prediction fails and the interesting constraint
+                is somewhere else.
+            </p>
+
+            <!-- ===== method ===== -->
+            <h2 class="h2">Method</h2>
+            <p class="p p--lead">
+                A faithful port, deliberately. No re-architecture, no
+                improvements in flight. The scope was the platinum-marts DAG:
+                65 models across bronze, silver (raw vault), gold (business
+                vault plus dimensional), and platinum. Orphan models nothing
+                downstream consumed were deferred rather than ported, and the
+                tests attached to them were excluded rather than counted as
+                failures.
+            </p>
+            <p class="p">
+                Bootstrap on the Snowflake side was four scripts: account and
+                schema setup, an external stage with a Parquet file format, a
+                <code>PUT</code> per source across 16 mappings, and an
+                <code>INFER_SCHEMA</code> plus <code>COPY</code> per source.
+                Runtime was the local <code>dbt-snowflake</code> adapter
+                against a trial account over key-pair auth.
+            </p>
+            <p class="p">
+                Equivalence was not judged by eye. A match contract ran inside
+                Snowflake at three tiers: grain, then typed content row by row,
+                then a raw-vault spot check. Matching is on natural keys and
+                content, never on hashes, because the two engines produce
+                different hash representations for identical inputs and a hash
+                comparison would report a difference that is not one.
+            </p>
+
+            <!-- ===== results ===== -->
+            <h2 class="h2">Results</h2>
+            <div class="tablewrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Measure</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Build on Snowflake</td>
+                            <td class="num">65 models, 468 tests, 0 errors, 0 failures</td>
+                        </tr>
+                        <tr>
+                            <td>Files changed under <code>dbt/models/</code></td>
+                            <td class="num">0</td>
+                        </tr>
+                        <tr>
+                            <td>Parity, grain</td>
+                            <td class="num">PASS</td>
+                        </tr>
+                        <tr>
+                            <td>Parity, typed content</td>
+                            <td class="num">PASS &mdash; 0 mismatches across 180,533 mart rows and 3,222 dimension rows</td>
+                        </tr>
+                        <tr>
+                            <td>Parity, raw-vault spot check</td>
+                            <td class="num">PASS &mdash; 5 of 5 tables exact</td>
+                        </tr>
+                        <tr>
+                            <td>Dialect gaps surfaced</td>
+                            <td class="num">4, none of which changed output</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="p">
+                The number that surprised me was zero. Not one file under
+                <code>dbt/models/</code> was modified. The DuckDB DAG and the
+                Snowflake DAG are byte-identical. Every portability problem got
+                fixed outside the models, in bootstrap SQL or in a single
+                dispatched macro.
+            </p>
+            <p class="p">
+                That is a result about how the platform was built rather than
+                about either engine. The models encode business logic; the
+                dialect-specific parts had already been pushed to the edges,
+                into adapter dispatch and source resolution. So the surface that
+                had to move was the plumbing, and the logic stayed put.
+            </p>
+
+            <!-- ===== gaps ===== -->
+            <h2 class="h2">The four gaps</h2>
+            <p class="p p--lead">
+                Every gap is listed, including the one the first fix caused.
+                The last column is the one that matters: a gap that changes
+                output is a redesign problem wearing a syntax costume, and none
+                of these did.
+            </p>
+            <div class="tablewrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Symptom</th>
+                            <th>Cause</th>
+                            <th>Fix</th>
+                            <th>Output changed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="num">1</td>
+                            <td>18 bronze models failed with <code>invalid identifier "GEOFIPS"</code></td>
+                            <td><code>INFER_SCHEMA</code> preserved the Parquet files' lowercase column names as case-sensitive identifiers. The models reference them unquoted, so the parser uppercases the reference and the match fails.</td>
+                            <td>Uppercase the column names in the <code>INFER_SCHEMA</code> template. Bootstrap side.</td>
+                            <td class="num">No</td>
+                        </tr>
+                        <tr>
+                            <td class="num">2</td>
+                            <td>One table broke <em>because of</em> fix 1</td>
+                            <td>Its source columns contain spaces, so they must be quoted, and quoting makes them case-sensitive. The blanket uppercase rule broke the one table it could not apply to.</td>
+                            <td>Exempt that table and keep its native case.</td>
+                            <td class="num">No</td>
+                        </tr>
+                        <tr>
+                            <td class="num">3</td>
+                            <td><code>dim_date</code> would not build</td>
+                            <td>Snowflake's <code>GENERATOR</code> requires a constant rowcount and rejects the date expression the DuckDB branch used.</td>
+                            <td>Rewrite the Snowflake branch of the date-spine macro as a fixed span bounded by a <code>WHERE</code>. Output-identical; DuckDB branch untouched.</td>
+                            <td class="num">No</td>
+                        </tr>
+                        <tr>
+                            <td class="num">4</td>
+                            <td>Selection and seed artifacts</td>
+                            <td>Two objects needed explicit selection, and 10 foreign-key tests pointed at the orphan models deferred from scope.</td>
+                            <td>Explicit selection; excluded the tests belonging to models deliberately not ported.</td>
+                            <td class="num">No</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 class="h2">Two of the gaps were domain lessons</h2>
+            <p class="p p--lead">
+                Gap 1 had a correct-looking mechanical fix and a better one.
+                Snowflake stores identifiers uppercase by default, and
+                mixed-case identifiers degrade micro-partition pruning, which
+                is a large part of what makes Snowflake fast. So uppercasing
+                was not just the way to make the error go away; it was the
+                native choice for the target. DuckDB never cared about case.
+                The rule I took from it: port toward the target's grain rather
+                than carrying the source's habits across.
+            </p>
+            <p class="p">
+                Gap 2 is the correction to gap 1. One table cannot take the
+                uppercase rule, and a blanket rule would have quietly broken
+                it. Migration rules are almost uniform, and the residue is
+                where the judgment lives.
+            </p>
+
+            <!-- ===== cost ===== -->
+            <h2 class="h2">What it cost</h2>
+            <p class="p p--lead">
+                One focused session, start to finish: re-entry, probes, scope,
+                green build, parity proven, wrap. Infrastructure cost was a
+                Snowflake trial credit against an extra-small warehouse on a
+                small dataset, which rounds to nothing at this size.
+            </p>
+            <p class="p">
+                The dominant cost was neither the porting nor the compute. It
+                was review bandwidth: reading diffs, making the case-versus-
+                pruning call, deciding which orphan models to leave behind. Four
+                decisions genuinely needed a person. Everything else was
+                mechanical translation that ran on its own.
+            </p>
+            <p class="p">
+                That ratio is the finding I care about. A handful of judgment
+                calls sitting on top of a large volume of autonomous
+                translation means the throughput limit is how fast a human can
+                verify, and staffing the work as though translation were the
+                bottleneck would size it wrong.
+            </p>
+
+            <!-- ===== limits ===== -->
+            <h2 class="h2">What this does not prove</h2>
+            <div class="callout">
+                <div class="callout__k">Scope limits</div>
+                <p class="p">
+                    This was a lift and shift on public data at small scale. It
+                    is not evidence for any of the following, and I have not
+                    run them:
+                </p>
+                <ul class="ul">
+                    <li>
+                        <strong>Re-architecting during the port.</strong> Changing
+                        the shape while proving the new shape equivalent to the
+                        old is the harder problem, and it is where a match
+                        contract earns its keep. Here nothing changed shape, so
+                        the contract was never stressed.
+                    </li>
+                    <li>
+                        <strong>Recomputed rather than ported outputs.</strong> One
+                        model's forecast was carried across rather than
+                        recomputed on the target, so a real divergence path went
+                        untested.
+                    </li>
+                    <li>
+                        <strong>Scale and sensitivity.</strong> 65 models of public
+                        data with no regulated content and no downstream
+                        consumers. Nothing here speaks to how the approach
+                        behaves at ten times the model count, under actuarial
+                        tolerances, or with protected data in the pipeline.
+                    </li>
+                    <li>
+                        <strong>Rebuilding from the specification alone.</strong> The
+                        source code was available throughout. Whether the spec
+                        by itself is sufficient to reproduce the platform is a
+                        separate experiment.
+                    </li>
+                </ul>
+            </div>
+
+            <!-- ===== next ===== -->
+            <h2 class="h2">What I would do differently</h2>
+            <p class="p p--lead">
+                The one thing that aged badly was a runtime decision made
+                during scoping. By the time the build ran, the researched
+                choice was stale and got revised mid-flight. Cheap to fix, but
+                it says something about sequencing: research done at scoping
+                time has a shelf life, and the build report rather than the
+                spec ends up holding the corrected truth.
+            </p>
+            <p class="p">
+                Next time I would date the technology choices in the spec and
+                re-check them at build time rather than trusting them because
+                they were written down.
+            </p>
+
+            <h2 class="h2">Receipts</h2>
+            <p class="receipts">
+                The full build history, feature specifications, structured
+                build reports, bootstrap SQL, and the parity contract live in
+                the project repository. The data-quality page renders the three
+                reconciliation tiers directly from the build reports rather
+                than from anything hand-written.<br>
+                <a href="https://gazetteer.danbrickey.dev/" target="_blank" rel="noopener">gazetteer.danbrickey.dev</a>
+            </p>
+
+        </div>
+
+        <div class="footer">
+            <span>Lab Note 01 &middot; Rev 2026&middot;08&middot;11</span>
+            <span><a href="../index.html">Back to the notebook</a></span>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    (function () {
+        var root = document.documentElement;
+        var toggle = document.getElementById('themeToggle');
+        var mql = window.matchMedia
+            ? window.matchMedia('(prefers-color-scheme: dark)')
+            : null;
+
+        function systemTheme() {
+            return mql && mql.matches ? 'dark' : 'light';
+        }
+
+        var stored = null;
+        try { stored = localStorage.getItem('theme'); } catch (e) {}
+
+        var initial = (stored === 'light' || stored === 'dark')
+            ? stored
+            : systemTheme();
+        applyTheme(initial);
+
+        if (mql) {
+            var onSystemChange = function () {
+                try { localStorage.removeItem('theme'); } catch (e) {}
+                applyTheme(systemTheme());
+            };
+            if (mql.addEventListener) {
+                mql.addEventListener('change', onSystemChange);
+            } else if (mql.addListener) {
+                mql.addListener(onSystemChange);
+            }
+        }
+
+        toggle.addEventListener('click', function () {
+            var next = root.getAttribute('data-theme') === 'dark'
+                ? 'light' : 'dark';
+            applyTheme(next);
+            try { localStorage.setItem('theme', next); } catch (e) {}
+        });
+
+        function applyTheme(theme) {
+            root.setAttribute('data-theme', theme);
+            toggle.textContent = theme === 'dark' ? '◑ Light' : '◐ Dark';
+        }
+    })();
+</script>
+</body>
+</html>

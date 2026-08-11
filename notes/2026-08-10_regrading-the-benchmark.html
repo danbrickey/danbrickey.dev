@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nine of ten scores moved when the benchmark was re-graded blind — Lab Notes — Dan Brickey</title>
+<meta name="description"
+      content="A benchmark's ten submissions re-scored in a shuffled blind pool
+               under matched effort. Nine of ten scores moved, the error was
+               systematic rather than random, and one published finding died.">
+<link rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f4f1e8' stroke='%231c1a17' stroke-width='6'/%3E%3Ctext x='50' y='66' font-size='46' font-family='Georgia,serif' font-weight='400' fill='%231c1a17' text-anchor='middle'%3EDB%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Josefin+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet">
+<link rel="stylesheet" href="note.css">
+</head>
+<body>
+<div class="desk">
+    <div class="sheet">
+
+        <div class="header">
+            <a class="header__back" href="../index.html">&larr; Notebook</a>
+            <div class="header__right">
+                <span class="header__page">Lab Notes &middot; No. 03</span>
+                <button class="toggle" type="button" id="themeToggle"
+                        aria-label="Toggle light and dark theme">◐ Dark</button>
+            </div>
+        </div>
+
+        <div class="note">
+
+            <div class="note__eyebrow">Evaluation &middot; Instrument Validity</div>
+            <h1 class="note__title">
+                Nine of ten scores moved when the benchmark was re-graded blind
+            </h1>
+            <p class="note__standfirst">
+                What happens to a set of benchmark results when the same
+                submissions are scored a second time, shuffled and blind, under
+                a matched effort protocol? Nine of ten moved. All but one moved
+                up, the largest by 27 points, and the error was not random. It
+                tracked how bad each submission looked.
+            </p>
+
+            <div class="meta">
+                <div class="meta__cell">
+                    <div class="meta__k">Date</div>
+                    <div class="meta__v">2026-08-10</div>
+                </div>
+                <div class="meta__cell">
+                    <div class="meta__k">Subject</div>
+                    <div class="meta__v">10 submissions, 3 model tiers, frozen spec</div>
+                </div>
+                <div class="meta__cell">
+                    <div class="meta__k">Graders</div>
+                    <div class="meta__v">10 cold, one per cell, LLM</div>
+                </div>
+                <div class="meta__cell">
+                    <div class="meta__k">Verdict</div>
+                    <div class="meta__v">One finding died, one shrank by two thirds</div>
+                </div>
+            </div>
+
+            <!-- ===== the trigger ===== -->
+            <h2 class="h2">What set it off</h2>
+            <p class="p p--lead">
+                Nothing about the results. A later run happened to log its
+                grader activity, and two cells of the same size had been graded
+                in <strong>9 tool calls</strong> and <strong>58</strong>.
+            </p>
+            <p class="p">
+                Both graders returned a confident number. Neither number was
+                marked as less reliable than the other. That disparity said
+                nothing about which score was right, but it did say the amount
+                of reading behind a score was uncontrolled, and it had been
+                uncontrolled for the entire preceding series.
+            </p>
+            <p class="p">
+                Every claim in the lab rested on those numbers. So the whole set
+                went back through.
+            </p>
+
+            <!-- ===== hypothesis ===== -->
+            <h2 class="h2">What I expected, and the rule I broke getting there</h2>
+            <p class="p p--lead">
+                The lab has one procedural rule that matters: the hypothesis
+                goes in the notebook before the run. <strong>This run broke
+                it.</strong> The predictions were stated out loud while setting
+                the re-grade up and never written down first, which makes them
+                weaker evidence than they look, and I am recording that rather
+                than presenting them as if they had been pre-registered.
+            </p>
+            <p class="p">
+                What was claimed, in conversation, beforehand: that the repeat
+                run would confirm a small noise floor, that the instrument's
+                saturation at the top of the range would survive, and that one
+                flat result at the middle tier needed checking.
+            </p>
+            <p class="p">
+                The expectation underneath all three was that the re-grade
+                would be housekeeping. Small movements, no changed conclusions,
+                cheap insurance.
+            </p>
+
+            <!-- ===== method ===== -->
+            <h2 class="h2">Method</h2>
+            <p class="p p--lead">
+                All ten submissions copied into a single shuffled, interleaved
+                pool with every prior score file stripped out. The originals had
+                been graded blind too, but in batches labelled by condition,
+                which tells a grader what it is looking at even when it does not
+                know the score.
+            </p>
+            <p class="p">
+                Ten cold graders, one per cell, each given a mandatory protocol:
+                enumerate the files, read all of them, score item by item, and
+                report the file-read count. The count is the control. A grader
+                that reports reading four files out of thirty has disqualified
+                its own number.
+            </p>
+
+            <!-- ===== results ===== -->
+            <h2 class="h2">Results</h2>
+            <div class="tablewrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cell</th>
+                            <th class="num">Original</th>
+                            <th class="num">Re-grade</th>
+                            <th class="num">Δ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Strong tier, full library</td><td class="num">96</td><td class="num">100</td><td class="num">+4</td></tr>
+                        <tr><td>Strong tier, full library (repeat run)</td><td class="num">100</td><td class="num">100</td><td class="num">0</td></tr>
+                        <tr><td>Strong tier, thin library</td><td class="num">93</td><td class="num">100</td><td class="num">+7</td></tr>
+                        <tr><td>Strong tier, colloquial library</td><td class="num">100</td><td class="num">100</td><td class="num">0</td></tr>
+                        <tr><td><strong>Strong tier, no library</strong></td><td class="num">62</td><td class="num"><strong>89</strong></td><td class="num"><strong>+27</strong></td></tr>
+                        <tr><td>Mid tier, full library</td><td class="num">97</td><td class="num">97</td><td class="num">0</td></tr>
+                        <tr><td>Mid tier, thin library</td><td class="num">97</td><td class="num">97</td><td class="num">0</td></tr>
+                        <tr><td>Mid tier, no library</td><td class="num">89</td><td class="num">92.5</td><td class="num">+3.5</td></tr>
+                        <tr><td>Low tier, canonical library</td><td class="num">78</td><td class="num">82</td><td class="num">+4</td></tr>
+                        <tr><td>Low tier, colloquial library</td><td class="num">84</td><td class="num">81</td><td class="num">&minus;3</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="p">
+                Nine of ten scored the same or higher. The one that fell, fell
+                by 3.
+            </p>
+
+            <!-- ===== systematic ===== -->
+            <h2 class="h2">The error was systematic, not noise</h2>
+            <p class="p p--lead">
+                Random grader variance would scatter in both directions with
+                roughly equal magnitude. This did not. Nine of ten corrections
+                went one way, and the size of each correction tracked how bad
+                the submission looked on first inspection.
+            </p>
+            <p class="p">
+                The 27-point miss landed on the lowest-scoring cell in the
+                series. The zero-movement cells were the ones that already
+                looked polished. A submission that presented badly was read less
+                carefully and scored more harshly, and the two compounded.
+            </p>
+            <p class="p">
+                That is presentation bias contaminating a substance score. It
+                matters here because the whole point of the instrument was to
+                separate <em>looks right</em> from <em>is right</em>, and the
+                grader was doing the opposite at exactly the cells where the
+                distinction mattered most.
+            </p>
+
+            <div class="callout">
+                <div class="callout__k">The generalisable part</div>
+                <p class="p">
+                    The original scoring was already blind. Blinding was not
+                    enough, because the graders were free to spend wildly
+                    different amounts of attention per submission.
+                    <strong>Blind grading with unmatched effort is not a
+                    controlled comparison.</strong> The fix that worked was
+                    cheap: a mandatory read protocol, and a reported read count
+                    that makes an under-read score visible.
+                </p>
+            </div>
+
+            <!-- ===== what died ===== -->
+            <h2 class="h2">What died, and what shrank</h2>
+            <p class="p p--lead">
+                <strong>A phantom noise floor.</strong> Two independent cold
+                runs of the identical input, same model and same context, had
+                scored 96 and 100. That 4-point spread had been treated all
+                afternoon as the instrument's noise floor, and used to demote
+                findings smaller than 4 points as unreliable.
+            </p>
+            <p class="p">
+                Under matched grading the two runs agree <strong>exactly</strong>,
+                dimension for dimension, both at 100. The noise floor is zero.
+                Generation on this task is far more reproducible than the series
+                implied, and every finding demoted for falling under 4 points
+                had been demoted against a number that did not exist.
+            </p>
+            <p class="p">
+                <strong>A phrasing effect.</strong> A 6-point gap between two
+                differently-worded versions of the same library closed to 1
+                point and changed sign. It was variance in two specific cells.
+                The decision that gap had driven, which was to stop trusting a
+                set of vocabulary rules, still stands. The reason given for it
+                was wrong.
+            </p>
+            <p class="p">
+                That distinction is worth keeping separate. Right call, wrong
+                reason, is a different state from right call, right reason, and
+                it stays fragile until the reason is fixed.
+            </p>
+            <p class="p">
+                <strong>A context effect, by two thirds.</strong> The headline
+                result from the ablation study, that removing a pattern library
+                cost 34 points, became 11. The direction survived. The magnitude
+                did not, and a pre-registered prediction that had been recorded
+                as confirmed turned out to be wrong by more than twenty points.
+                That one has
+                <a href="2026-08-10_pattern-library-ablation.html">its own write-up</a>.
+            </p>
+
+            <!-- ===== cost ===== -->
+            <h2 class="h2">What it cost</h2>
+            <p class="p p--lead">
+                One time-boxed block and ten cold graders. Against that: a day
+                of conclusions that had to be re-derived, two findings
+                withdrawn or rewritten, and every number in the repository
+                stamped with a warning pointing at the corrected series.
+            </p>
+            <p class="p">
+                The re-grade itself was the cheapest thing in the sequence. The
+                expensive part was everything built on top of the numbers before
+                anyone checked them.
+            </p>
+
+            <!-- ===== limits ===== -->
+            <h2 class="h2">What this does not prove</h2>
+            <div class="callout">
+                <div class="callout__k">Scope limits</div>
+                <ul class="ul">
+                    <li>
+                        <strong>The re-grade has one grader per cell too.</strong>
+                        It is better controlled, not verified. Dual grading is
+                        open work, and it is open specifically because
+                        single-grader bias stopped being theoretical here.
+                    </li>
+                    <li>
+                        <strong>A language model graded language model output.</strong>
+                        Whether a human panel would show the same presentation
+                        bias, more, or less, is untested.
+                    </li>
+                    <li>
+                        <strong>Ten cells, one frozen synthetic spec, one
+                        domain.</strong> The bias direction found here may not
+                        generalise to other rubrics or other tasks.
+                    </li>
+                    <li>
+                        <strong>No ground truth.</strong> The re-graded numbers
+                        are better controlled than the originals. Nothing in
+                        this design establishes that they are correct, only that
+                        they were produced under a protocol the first pass
+                        lacked.
+                    </li>
+                    <li>
+                        <strong>The predictions were not written down first</strong>,
+                        so this run's own hypothesis is weaker evidence than the
+                        rest of the series.
+                    </li>
+                </ul>
+            </div>
+
+            <!-- ===== changed ===== -->
+            <h2 class="h2">What I changed as a result</h2>
+            <ul class="ul">
+                <li>
+                    <strong>Matched effort is part of the grading protocol now</strong>,
+                    not an assumption. Enumerate, read everything, score item by
+                    item, report the read count.
+                </li>
+                <li>
+                    <strong>Shuffled interleaved pools</strong> rather than
+                    condition-labelled batches. A batch label leaks the
+                    condition even when the score is hidden.
+                </li>
+                <li>
+                    <strong>Superseded numbers stay on the page</strong>, marked,
+                    next to the corrected ones. Deleting them would remove the
+                    evidence that the instrument was ever wrong, which is the
+                    part worth keeping.
+                </li>
+                <li>
+                    <strong>A noise floor gets measured before it gets used.</strong>
+                    The phantom 4 points came from assuming two disagreeing runs
+                    meant generation variance, when the disagreement was in the
+                    measurement.
+                </li>
+            </ul>
+            <p class="p">
+                The broader habit this reinforced: an evaluation harness is
+                itself an artifact that can be wrong, and it is the one artifact
+                nobody tests, because it is what testing is done with. Six of
+                ten predictions in this lab have come back wrong so far. Until
+                this run, none of the misses had been attributed to the
+                instrument.
+            </p>
+
+            <h2 class="h2">Receipts</h2>
+            <p class="receipts">
+                The frozen spec, rubric, all ten submissions, the original and
+                re-graded score files, and the re-grade protocol live in the lab
+                repository. Superseded pages carry warnings pointing at the
+                corrected series rather than having been rewritten in place.<br>
+                <a href="2026-08-10_pattern-library-ablation.html">Related: a pattern library buys conventions, not judgment</a>
+            </p>
+
+        </div>
+
+        <div class="footer">
+            <span>Lab Note 03 &middot; Rev 2026&middot;08&middot;11</span>
+            <span><a href="../index.html">Back to the notebook</a></span>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    (function () {
+        var root = document.documentElement;
+        var toggle = document.getElementById('themeToggle');
+        var mql = window.matchMedia
+            ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+
+        function systemTheme() { return mql && mql.matches ? 'dark' : 'light'; }
+
+        var stored = null;
+        try { stored = localStorage.getItem('theme'); } catch (e) {}
+
+        applyTheme((stored === 'light' || stored === 'dark') ? stored : systemTheme());
+
+        if (mql) {
+            var onSystemChange = function () {
+                try { localStorage.removeItem('theme'); } catch (e) {}
+                applyTheme(systemTheme());
+            };
+            if (mql.addEventListener) { mql.addEventListener('change', onSystemChange); }
+            else if (mql.addListener) { mql.addListener(onSystemChange); }
+        }
+
+        toggle.addEventListener('click', function () {
+            var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            applyTheme(next);
+            try { localStorage.setItem('theme', next); } catch (e) {}
+        });
+
+        function applyTheme(theme) {
+            root.setAttribute('data-theme', theme);
+            toggle.textContent = theme === 'dark' ? '◑ Light' : '◐ Dark';
+        }
+    })();
+</script>
+</body>
+</html>

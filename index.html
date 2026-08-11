@@ -223,20 +223,6 @@
         opacity: .45;
     }
 
-    .headshot__caption {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        text-align: center;
-        font-size: 8px;
-        letter-spacing: 1.5px;
-        padding: 3px;
-        background: var(--labelbg);
-        color: var(--ink);
-        pointer-events: none;
-    }
-
     /* ===== sections / connectors ===== */
     .section {
         margin-top: 30px;
@@ -350,6 +336,29 @@
         margin: 10px 0 0;
         color: var(--ink);
         max-width: 720px;
+    }
+
+    .card__meta {
+        font-size: 10px;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-top: 8px;
+    }
+
+    .card__pitch code {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: .93em;
+        border: 1px solid var(--linesoft);
+        padding: 0 4px;
+    }
+
+    .note-intro {
+        font-size: 12.5px;
+        line-height: 1.85;
+        margin: 0 0 18px;
+        color: var(--muted);
+        max-width: 760px;
     }
 
     .card--open {
@@ -570,7 +579,7 @@
                             <div class="hero__text">
                                 <h1 class="hero__name">Dan Brickey</h1>
                                 <div class="hero__role">
-                                    Data Platform Architect · node/root
+                                    Data Platform Architect
                                 </div>
                                 <p class="hero__pitch">
                                     Data Vault 2.0 · Kimball · AI-leveraged
@@ -581,7 +590,6 @@
                                 <img class="headshot__img"
                                      src="headshot.png"
                                      alt="Dan Brickey">
-                                <span class="headshot__caption">HEADSHOT</span>
                             </div>
                         </div>
                     </div>
@@ -602,6 +610,114 @@
                                 about lineage and documentation as I do about
                                 throughput.
                             </p>
+                        </div>
+                    </div>
+
+                    <!-- ===== lab notes ===== -->
+                    <div class="section">
+                        <div class="heading">Lab Notes · Findings</div>
+
+                        <div class="work">
+                            <div class="rail">
+                                <div class="rail__line rail__line--work"></div>
+                            </div>
+                            <div class="section__body">
+
+                                <p class="note-intro">
+                                    Write-ups from the build log: what I
+                                    predicted, what the numbers came back as,
+                                    what it cost, and what each run does not
+                                    prove. Drawn from the specs, build reports,
+                                    and decision logs the projects were built
+                                    with, so every claim here has a record
+                                    behind it.
+                                </p>
+
+                                <!-- N03 -->
+                                <div class="card">
+                                    <div class="card__connector"></div>
+                                    <div class="card__top">
+                                        <div class="card__title">
+                                            N03 · Nine of Ten Scores Moved on a
+                                            Blind Re-Grade
+                                        </div>
+                                        <a class="card__link"
+                                           href="notes/2026-08-10_regrading-the-benchmark.html">→ READ</a>
+                                    </div>
+                                    <div class="card__meta">
+                                        2026·08·10 · Evaluation · ai_lab ·
+                                        One finding died
+                                    </div>
+                                    <p class="card__pitch">
+                                        Ten benchmark submissions re-scored in a
+                                        shuffled blind pool under a matched
+                                        effort protocol. Nine of ten moved, all
+                                        but one upward, and the error tracked
+                                        how bad each submission looked rather
+                                        than scattering randomly. A phantom
+                                        noise floor turned out to be zero, one
+                                        published finding died, and a headline
+                                        result shrank by two thirds.
+                                    </p>
+                                </div>
+
+                                <!-- N02 -->
+                                <div class="card">
+                                    <div class="card__connector"></div>
+                                    <div class="card__top">
+                                        <div class="card__title">
+                                            N02 · A Pattern Library Buys
+                                            Conventions, Not Judgment
+                                        </div>
+                                        <a class="card__link"
+                                           href="notes/2026-08-10_pattern-library-ablation.html">→ READ</a>
+                                    </div>
+                                    <div class="card__meta">
+                                        2026·08·10 · Context Engineering ·
+                                        ai_lab · Core prediction held
+                                    </div>
+                                    <p class="card__pitch">
+                                        A written pattern library stripped in
+                                        stages and scored against a frozen spec.
+                                        Its existence is worth 11 points; its
+                                        content and phrasing are worth zero, and
+                                        592 words did exactly what 709 did. With
+                                        no library at all, judgment held at 44
+                                        of 44 while conventions fell — and at a
+                                        lower model tier the failure flips to
+                                        the half that is invisible in review.
+                                    </p>
+                                </div>
+
+                                <!-- N01 -->
+                                <div class="card">
+                                    <div class="card__connector"></div>
+                                    <div class="card__top">
+                                        <div class="card__title">
+                                            N01 · Porting 65 dbt Models to
+                                            Snowflake
+                                        </div>
+                                        <a class="card__link"
+                                           href="notes/2026-06-21_duckdb-to-snowflake-parity.html">→ READ</a>
+                                    </div>
+                                    <div class="card__meta">
+                                        2026·06·21 · Migration · Gazetteer ·
+                                        Prediction held
+                                    </div>
+                                    <p class="card__pitch">
+                                        A DuckDB platform moved to Snowflake to
+                                        measure how much of a migration is
+                                        judgment and how much is labor. Zero
+                                        files under <code>dbt/models/</code>
+                                        changed, four dialect gaps surfaced and
+                                        none of them altered output, and content
+                                        parity came back clean across 180,533
+                                        mart rows. The expensive part was review
+                                        bandwidth, not translation.
+                                    </p>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
 
@@ -662,13 +778,6 @@
                                         so “where's my happy place” gets a real,
                                         data-backed answer.
                                     </p>
-                                </div>
-
-                                <!-- open nodes -->
-                                <div class="card card--open">
-                                    <div class="card__connector"></div>
-                                    03–10 · open nodes — ruled &amp; ready for
-                                    the next entries
                                 </div>
 
                             </div>
@@ -734,7 +843,7 @@
                     Signed
                     <span class="footer__sig">Dan Brickey</span>
                 </div>
-                <div class="footer__rev">SHEET 01 · REV 2026·07·06</div>
+                <div class="footer__rev">SHEET 01 · REV 2026·08·11</div>
             </div>
 
         </div>
